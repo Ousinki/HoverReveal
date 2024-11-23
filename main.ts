@@ -1,4 +1,6 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, MarkdownPostProcessor, MarkdownRenderChild } from 'obsidian';
+import { EditorView, ViewPlugin, ViewUpdate, Decoration, DecorationSet, WidgetType } from '@codemirror/view';
+import { Extension } from '@codemirror/state';
 
 // Remember to rename these classes and interfaces!
 
@@ -14,6 +16,7 @@ export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
 
 	async onload() {
+		console.log('HoverReveal plugin loading...');
 		await this.loadSettings();
 
 		// This creates an icon in the left ribbon.
@@ -76,6 +79,84 @@ export default class MyPlugin extends Plugin {
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+
+		// 注册Markdown后处理器
+		this.registerMarkdownPostProcessor((element, context) => {
+			console.log('Markdown processor called');
+			
+			// 处理所有文本节点，而不仅仅是段落
+			const walker = document.createTreeWalker(
+				element,
+				NodeFilter.SHOW_TEXT,
+				null
+			);
+
+			const nodesToProcess = [];
+			let node;
+			while (node = walker.nextNode()) {
+				nodesToProcess.push(node);
+			}
+
+			nodesToProcess.forEach(textNode => {
+				const text = textNode.textContent;
+				if (!text) return;
+
+				const regex = /\[(.*?)\]\{(.*?)\}/g;
+				let match;
+				let lastIndex = 0;
+				const fragments = [];
+
+				while ((match = regex.exec(text)) !== null) {
+					console.log('Found match:', match);
+					
+					// 添加匹配前的文本
+					if (match.index > lastIndex) {
+						fragments.push(document.createTextNode(
+							text.slice(lastIndex, match.index)
+						));
+					}
+
+					const [fullMatch, visibleText, hoverText] = match;
+					
+					// 创建悬停元素
+					const container = document.createElement('span');
+					container.addClass('hover-reveal-container');
+					
+					const span = document.createElement('span');
+					span.addClass('hover-reveal');
+					span.setText(visibleText);
+					
+					const tooltip = document.createElement('div');
+					tooltip.addClass('hover-reveal-tooltip');
+					tooltip.setText(hoverText);
+					
+					span.appendChild(tooltip);
+					container.appendChild(span);
+					fragments.push(container);
+					
+					lastIndex = match.index + fullMatch.length;
+				}
+
+				// 添加剩余的文本
+				if (lastIndex < text.length) {
+					fragments.push(document.createTextNode(
+						text.slice(lastIndex)
+					));
+				}
+
+				// 只有在找到匹配时才替换节点
+				if (fragments.length > 0 && textNode.parentNode) {
+					const fragment = document.createDocumentFragment();
+					fragments.forEach(f => fragment.appendChild(f));
+					textNode.parentNode.replaceChild(fragment, textNode);
+				}
+			});
+		});
+
+		// 添加编辑器扩展
+		this.registerEditorExtension(this.hoverRevealExtension());
+
+		console.log('HoverReveal plugin loaded');
 	}
 
 	onunload() {
@@ -88,6 +169,68 @@ export default class MyPlugin extends Plugin {
 
 	async saveSettings() {
 		await this.saveData(this.settings);
+	}
+
+	private hoverRevealExtension(): Extension {
+		class TooltipWidget extends WidgetType {
+			constructor(
+				readonly visibleText: string,
+				readonly tooltipText: string
+			) {
+				super();
+			}
+
+			toDOM() {
+				const span = document.createElement('span');
+				span.addClass('hover-reveal');
+				span.setText(this.visibleText);
+
+				const tooltip = document.createElement('div');
+				tooltip.addClass('hover-reveal-tooltip');
+				tooltip.setText(this.tooltipText);
+
+				span.appendChild(tooltip);
+				return span;
+			}
+		}
+
+		const tooltipPlugin = ViewPlugin.fromClass(class {
+			decorations: DecorationSet;
+
+			constructor(view: EditorView) {
+				this.decorations = this.buildDecorations(view);
+			}
+
+			update(update: ViewUpdate) {
+				if (update.docChanged || update.viewportChanged) {
+					this.decorations = this.buildDecorations(update.view);
+				}
+			}
+
+			buildDecorations(view: EditorView) {
+				const widgets = [];
+				const content = view.state.doc.toString();
+				const regex = /!(.*?)!\((.*?)\)/g;
+				let match;
+
+				while ((match = regex.exec(content)) !== null) {
+					const [fullMatch, visibleText, tooltipText] = match;
+					const from = match.index;
+					const to = from + fullMatch.length;
+
+					widgets.push(Decoration.replace({
+						widget: new TooltipWidget(visibleText, tooltipText),
+						inclusive: true
+					}).range(from, to));
+				}
+
+				return Decoration.set(widgets);
+			}
+		}, {
+			decorations: v => v.decorations
+		});
+
+		return [tooltipPlugin];
 	}
 }
 

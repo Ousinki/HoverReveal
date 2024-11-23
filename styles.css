@@ -6,3 +6,193 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+
+.hover-reveal {
+    position: relative;
+    color: var(--text-normal);
+    border-bottom: 1px dashed var(--text-muted);
+    cursor: pointer;
+    background-color: yellow !important;
+    padding: 2px 5px !important;
+    border: 2px solid red !important;
+}
+
+.hover-reveal-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    background-color: black !important;
+    color: white !important;
+    border: 2px solid red !important;
+    border-radius: 4px;
+    font-size: 0.9em;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-bottom: 5px;
+}
+
+.hover-reveal:hover .hover-reveal-tooltip {
+    display: block !important;
+}
+
+/* 添加小箭头 */
+.hover-reveal-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--background-secondary) transparent transparent transparent;
+}
+
+/* 增加选择器优先级 */
+.markdown-preview-view .hover-reveal {
+    position: relative !important;
+    color: var(--text-normal) !important;
+    border-bottom: 1px dashed var(--text-muted) !important;
+    cursor: pointer !important;
+}
+
+.markdown-preview-view .hover-reveal .hover-reveal-tooltip {
+    display: none !important;
+    position: absolute !important;
+    bottom: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    padding: 5px 10px !important;
+    background-color: var(--background-secondary) !important;
+    border: 1px solid var(--background-modifier-border) !important;
+    border-radius: 4px !important;
+    z-index: 1000 !important;
+}
+
+.markdown-preview-view .hover-reveal:hover .hover-reveal-tooltip {
+    display: block !important;
+}
+
+/* 增加特异性和使用 !important */
+body .markdown-preview-view .hover-reveal {
+    position: relative !important;
+    display: inline-block !important;
+    cursor: pointer !important;
+    border-bottom: 1px dashed var(--text-muted) !important;
+    z-index: 1 !important;
+}
+
+body .markdown-preview-view .hover-reveal .hover-reveal-tooltip {
+    visibility: hidden; /* 使用 visibility 替代 display */
+    position: absolute !important;
+    bottom: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    padding: 5px 10px !important;
+    background-color: var(--background-secondary) !important;
+    border: 1px solid var(--background-modifier-border) !important;
+    border-radius: 4px !important;
+    font-size: 0.9em !important;
+    white-space: nowrap !important;
+    z-index: 1000 !important;
+    
+    /* 添加过渡效果 */
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+}
+
+body .markdown-preview-view .hover-reveal:hover .hover-reveal-tooltip {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* 添加箭头 */
+body .markdown-preview-view .hover-reveal .hover-reveal-tooltip::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    border: 5px solid transparent !important;
+    border-top-color: var(--background-secondary) !important;
+}
+
+/* 添加到现有样式文件末尾 */
+/* DEBUG STYLES - 开发完成后删除 */
+body .markdown-preview-view .hover-reveal {
+    background-color: rgba(255, 0, 0, 0.1) !important; /* 淡红色背景 */
+    outline: 1px solid red !important; /* 红色轮廓 */
+}
+
+body .markdown-preview-view .hover-reveal:hover {
+    background-color: rgba(255, 0, 0, 0.2) !important; /* 悬停时加深背景 */
+}
+
+body .markdown-preview-view .hover-reveal-tooltip {
+    background-color: rgba(0, 0, 0, 0.9) !important; /* 深色背景 */
+    color: white !important;
+    outline: 2px solid yellow !important; /* 黄色轮廓 */
+}
+
+/* 重置任何继承的样式 */
+.markdown-preview-view .hover-reveal-container {
+    display: inline !important;
+    background: none !important;
+    color: inherit !important;
+    font-weight: inherit !important;
+    text-decoration: none !important;
+}
+
+.markdown-preview-view .hover-reveal {
+    all: initial !important; /* 重置所有属性 */
+    display: inline-block !important;
+    position: relative !important;
+    color: var(--text-normal) !important;
+    font-family: inherit !important;
+    font-size: inherit !important;
+    line-height: inherit !important;
+    text-decoration: none !important;
+    border-bottom: 1px dashed var(--text-muted) !important;
+    cursor: pointer !important;
+    background-color: transparent !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.markdown-preview-view .hover-reveal-tooltip {
+    all: initial !important;
+    display: none !important;
+    position: absolute !important;
+    bottom: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    padding: 5px 10px !important;
+    background-color: var(--background-secondary) !important;
+    color: var(--text-normal) !important;
+    border: 1px solid var(--background-modifier-border) !important;
+    border-radius: 4px !important;
+    font-family: var(--font-interface) !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    white-space: nowrap !important;
+    z-index: 1000 !important;
+    margin-bottom: 5px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+}
+
+.markdown-preview-view .hover-reveal:hover .hover-reveal-tooltip {
+    display: block !important;
+}
+
+/* 添加箭头 */
+.markdown-preview-view .hover-reveal-tooltip::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    border: 5px solid transparent !important;
+    border-top-color: var(--background-secondary) !important;
+}
