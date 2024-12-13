@@ -8,13 +8,15 @@ If your plugin does not need CSS, delete this file.
 */
 
 .hover-reveal {
-    position: relative;
-    color: var(--text-normal);
-    border-bottom: 1px dashed var(--text-muted);
-    cursor: pointer;
-    background-color: yellow !important;
-    padding: 2px 5px !important;
-    border: 2px solid red !important;
+    position: relative; /* 必需，用于工具提示的定位 */
+    text-decoration: underline; /* 添加下划线 */
+    font-weight: bold; /* 加粗字体 */
+    color: inherit; /* 继承父元素的文本颜色 */
+    background-color: transparent !important; /* 移除背景色 */
+    border: none !important; /* 移除边框 */
+    padding: 0 !important; /* 移除内部填充 */
+    margin: 0 !important; /* 移除外部间距 */
+    cursor: pointer; /* 鼠标悬停时显示手形 */
 }
 
 .hover-reveal-tooltip {
@@ -52,10 +54,14 @@ If your plugin does not need CSS, delete this file.
 
 /* 增加选择器优先级 */
 .markdown-preview-view .hover-reveal {
-    position: relative !important;
-    color: var(--text-normal) !important;
-    border-bottom: 1px dashed var(--text-muted) !important;
-    cursor: pointer !important;
+    text-decoration: underline; /* 添加下划线 */
+    font-weight: bold; /* 加粗字体 */
+    color: inherit !important; /* 继承父元素的文本颜色 */
+    background-color: transparent !important; /* 移除背景色 */
+    border: none !important; /* 移除边框 */
+    padding: 0 !important; /* 移除内部填充 */
+    margin: 0 !important; /* 移除外部间距 */
+    cursor: pointer !important; /* 鼠标悬停时显示手形 */
 }
 
 .markdown-preview-view .hover-reveal .hover-reveal-tooltip {
