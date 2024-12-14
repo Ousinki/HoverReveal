@@ -80,7 +80,7 @@ export default class MyPlugin extends Plugin {
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 
-		// 注册Markdown后处理器
+		// 注册Markdown后处理器，element是解析后的html DOM节点，context是上下文信息
 		this.registerMarkdownPostProcessor((element, context) => {
 			console.log('Markdown processor called');
 			
