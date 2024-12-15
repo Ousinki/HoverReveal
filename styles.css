@@ -1,48 +1,96 @@
 /* .hover-reveal 样式 */
-.hover-reveal {
-    position: relative !important; /* 用于定位悬浮提示 */
-    text-decoration: underline !important; /* 添加下划线 */
-    font-weight: bold !important; /* 加粗字体 */
-    color: inherit !important; /* 继承父元素的颜色 */
-    background-color: transparent !important; /* 移除背景 */
-    border: none !important; /* 移除边框 */
-    padding: 0 !important; /* 移除填充 */
-    margin: 0 !important; /* 移除外间距 */
-    cursor: pointer !important; /* 鼠标悬停时显示手形 */
+.workspace-leaf-content .hover-reveal {
+    position: relative; /* 用于定位悬浮提示 */
+    text-decoration: underline; /* 添加下划线 */
+    font-weight: bold; /* 加粗字体 */
+    color: inherit; /* 继承父元素的颜色 */
+    background-color: transparent; /* 移除背景 */
+    border: none; /* 移除边框 */
+    padding: 0; /* 移除填充 */
+    margin: 0; /* 移除外间距 */
+    cursor: pointer; /* 鼠标悬停时显示手形 */
 }
 
 /* 悬浮提示框样式 */
-.hover-reveal-tooltip {
-    visibility: hidden !important; /* 初始为隐藏 */
-    position: absolute !important; /* 相对定位 */
-    bottom: 100% !important; /* 定位在元素上方 */
-    left: 50% !important; /* 居中显示 */
-    transform: translateX(-50%) !important; /* 居中 */
-    padding: 5px 10px !important; /* 内边距 */
-    background-color: var(--background-primary) !important; /* 修改为主题颜色 */
-    border: 1px solid var(--background-modifier-border) !important; /* 添加边框 */
-    color: rgb(15, 15, 15) !important; /* 文字颜色 */
-    border-radius: 4px !important; /* 圆角边框 */
-    font-size: 0.9em !important;
-    white-space: nowrap !important; /* 防止文本换行 */
-    z-index: 1000 !important; /* 保证层级高 */
-    opacity: 0 !important; /* 初始透明度 */
+.workspace-leaf-content .hover-reveal-tooltip {
+    visibility: hidden; /* 初始为隐藏 */
+    position: absolute; /* 相对定位 */
+    bottom: 100%; /* 定位在元素上方 */
+    left: 50%; /* 居中显示 */
+    transform: translateX(-50%); /* 居中 */
+    padding: 5px 10px; /* 内边距 */
+    background-color: var(--background-primary); /* 修改为主题颜色 */
+    border: 1px solid var(--background-modifier-border); /* 添加边框 */
+    color: var(--text-normal); /* 使用主题的文字颜色 */
+    border-radius: 4px; /* 圆角边框 */
+    font-size: 0.9em;
+    white-space: nowrap; /* 防止文本换行 */
+    z-index: 1000; /* 保证层级高 */
+    opacity: 0; /* 初始透明度 */
     transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out; /* 过渡效果 */
 }
 
 /* 悬浮显示提示框 */
-.hover-reveal:hover .hover-reveal-tooltip {
-    visibility: visible !important; /* 显示悬浮提示框 */
-    opacity: 1 !important; /* 透明度从 0 变为 1 */
+.workspace-leaf-content .hover-reveal:hover .hover-reveal-tooltip {
+    visibility: visible; /* 显示悬浮提示框 */
+    opacity: 1; /* 透明度从 0 变为 1 */
 }
 
 /* 悬浮提示框的小箭头 */
-.hover-reveal-tooltip::after {
-    content: '' !important;
-    position: absolute !important;
-    top: 100% !important; /* 箭头放置在下方 */
-    left: 50% !important; /* 居中显示 */
-    transform: translateX(-50%) !important;
-    border: 5px solid transparent !important;
-    border-top-color: var(--background-primary) !important; /* 小箭头的颜色与背景一致 */
+.workspace-leaf-content .hover-reveal-tooltip::after {
+    content: ''; 
+    position: absolute;
+    top: 100%; /* 箭头放置在下方 */
+    left: 50%; /* 居中显示 */
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--background-primary); /* 小箭头的颜色与背景一致 */
+}
+
+/* 容器样式 */
+.workspace-leaf-content .hover-reveal-container {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* 原始格式样式 */
+.workspace-leaf-content .hover-reveal-source {
+    color: var(--text-muted);
+    font-family: var(--font-monospace);
+    font-size: 0.9em;
+    background-color: var(--background-secondary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--background-modifier-border);
+    white-space: nowrap;
+    cursor: text;
+}
+
+/* 调整现有的悬停元素样式 */
+.workspace-leaf-content .hover-reveal {
+    position: relative;
+    display: inline-block;
+}
+
+/* 确保源码显示时tooltip不显示 */
+.workspace-leaf-content .hover-reveal[style*="display: none"] + .hover-reveal-tooltip,
+.workspace-leaf-content .hover-reveal-source[style*="display: inline-block"] ~ .hover-reveal .hover-reveal-tooltip {
+    display: none !important;
+}
+
+/* 调试用 - 显示元素边界 */
+.hover-reveal-container {
+    border: 1px solid red !important;
+}
+
+.hover-reveal-source {
+    border: 1px solid blue !important;
+}
+
+/* 临时强制显示用于调试 */
+.debug-show {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
 }

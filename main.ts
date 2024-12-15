@@ -13,7 +13,7 @@ interface MyPluginSettings {
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
 	mySetting: 'default',
-	tooltipTextColor: '#0f0f0f',
+	tooltipTextColor: 'var(--text-normal)',
 	tooltipBackgroundColor: 'var(--background-primary)',
 	tooltipBorderColor: 'var(--background-modifier-border)'
 }
@@ -88,7 +88,7 @@ export default class MyPlugin extends Plugin {
 
 		// 注册Markdown后处理器，element是解析后的html DOM节点，context是上下文信息
 		this.registerMarkdownPostProcessor((element, context) => {
-			console.log('Markdown processor called');
+			console.log('处理器被调用');
 			
 			// 处理所有文本节点，而不仅仅是段落
 			const walker = document.createTreeWalker(
@@ -104,6 +104,8 @@ export default class MyPlugin extends Plugin {
 			}
 
 			nodesToProcess.forEach(textNode => {
+				console.log('处理文本节点:', textNode.textContent);
+				
 				const text = textNode.textContent;
 				if (!text) return;
 
@@ -128,16 +130,59 @@ export default class MyPlugin extends Plugin {
 					const container = document.createElement('span');
 					container.addClass('hover-reveal-container');
 					
-					const span = document.createElement('span');
-					span.addClass('hover-reveal');
-					span.setText(visibleText);
+					// 创建渲染后的元素
+					const renderedElement = document.createElement('span');
+					renderedElement.addClass('hover-reveal');
+					renderedElement.setText(visibleText);
+					
+					// 创建原始格式显示元素
+					const sourceElement = document.createElement('span');
+					sourceElement.addClass('hover-reveal-source');
+					sourceElement.setText(fullMatch);
+					sourceElement.style.display = 'none';
 					
 					const tooltip = document.createElement('div');
 					tooltip.addClass('hover-reveal-tooltip');
 					tooltip.setText(hoverText);
 					
-					span.appendChild(tooltip);
-					container.appendChild(span);
+					// 点击事件处理 - 修改后的版本
+					let isShowingSource = false;
+					
+					const toggleSource = (e: MouseEvent) => {
+						console.log('触发点击事件');
+						console.log('当前显示状态:', isShowingSource);
+						e.stopPropagation();
+						isShowingSource = !isShowingSource;
+						
+						if (isShowingSource) {
+							console.log('切换到源码显示');
+							renderedElement.style.display = 'none';
+							sourceElement.style.display = 'inline-block';
+						} else {
+							console.log('切换到渲染显示');
+							renderedElement.style.display = 'inline-block';
+							sourceElement.style.display = 'none';
+						}
+					};
+					
+					// 为容器添加点击事件
+					container.addEventListener('click', toggleSource);
+					
+					// 为文档添加点击事件，但要确保只添加一次
+					const handleDocumentClick = (e: MouseEvent) => {
+						if (!container.contains(e.target as Node) && isShowingSource) {
+							isShowingSource = false;
+							renderedElement.style.display = 'inline-block';
+							sourceElement.style.display = 'none';
+						}
+					};
+					
+					// 使用插件的registerDomEvent来注册事件，这样插件禁用时会自动清理
+					this.registerDomEvent(document, 'click', handleDocumentClick);
+					
+					renderedElement.appendChild(tooltip);
+					container.appendChild(sourceElement);
+					container.appendChild(renderedElement);
 					fragments.push(container);
 					
 					lastIndex = match.index + fullMatch.length;
@@ -267,6 +312,41 @@ class SampleSettingTab extends PluginSettingTab {
 	display(): void {
 		const {containerEl} = this;
 		containerEl.empty();
+
+		// 添加重置按钮到右下角
+		const resetButton = containerEl.createEl('button', {
+			text: '重置为默认样式',
+			cls: 'hover-reveal-reset-button',
+		});
+		
+		resetButton.style.cssText = `
+			position: absolute;
+			bottom: 20px;
+			right: 20px;
+			padding: 8px 12px;
+			background-color: var(--interactive-accent);
+			color: var(--text-on-accent);
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+		`;
+
+		resetButton.addEventListener('click', async () => {
+			// 重置为默认设置
+			this.plugin.settings.tooltipTextColor = DEFAULT_SETTINGS.tooltipTextColor;
+			this.plugin.settings.tooltipBackgroundColor = DEFAULT_SETTINGS.tooltipBackgroundColor;
+			this.plugin.settings.tooltipBorderColor = DEFAULT_SETTINGS.tooltipBorderColor;
+			
+			// 保存设置
+			await this.plugin.saveSettings();
+			
+			// 更新UI和样式
+			this.display();
+			this.updateStyles();
+			
+			// 显示提示
+			new Notice('样式已重置为默认设置');
+		});
 
 		// 文字颜色设置
 		new Setting(containerEl)
