@@ -6,10 +6,16 @@ import { Extension } from '@codemirror/state';
 
 interface MyPluginSettings {
 	mySetting: string;
+	tooltipTextColor: string;
+	tooltipBackgroundColor: string;
+	tooltipBorderColor: string;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
-	mySetting: 'default'
+	mySetting: 'default',
+	tooltipTextColor: '#0f0f0f',
+	tooltipBackgroundColor: 'var(--background-primary)',
+	tooltipBorderColor: 'var(--background-modifier-border)'
 }
 
 export default class MyPlugin extends Plugin {
@@ -260,18 +266,91 @@ class SampleSettingTab extends PluginSettingTab {
 
 	display(): void {
 		const {containerEl} = this;
-
 		containerEl.empty();
 
+		// 文字颜色设置
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
+			.setName('Tooltip Text Color')
+			.setDesc('Set the text color of the tooltip')
 			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
+				.setPlaceholder('#000000')
+				.setValue(this.plugin.settings.tooltipTextColor)
 				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
+					this.plugin.settings.tooltipTextColor = value;
 					await this.plugin.saveSettings();
+					this.updateStyles();
+				}))
+			.addColorPicker(color => color
+				.setValue(this.plugin.settings.tooltipTextColor)
+				.onChange(async (value) => {
+					this.plugin.settings.tooltipTextColor = value;
+					await this.plugin.saveSettings();
+					this.updateStyles();
 				}));
+
+		// 背景颜色设置  
+		new Setting(containerEl)
+			.setName('Tooltip Background Color')
+			.setDesc('Set the background color of the tooltip')
+			.addText(text => text
+				.setPlaceholder('var(--background-primary)')
+				.setValue(this.plugin.settings.tooltipBackgroundColor)
+				.onChange(async (value) => {
+					this.plugin.settings.tooltipBackgroundColor = value;
+					await this.plugin.saveSettings();
+					this.updateStyles();
+				}))
+			.addColorPicker(color => color
+				.setValue(this.plugin.settings.tooltipBackgroundColor)
+				.onChange(async (value) => {
+					this.plugin.settings.tooltipBackgroundColor = value;
+					await this.plugin.saveSettings();
+					this.updateStyles();
+				}));
+
+		// 边框颜色设置
+		new Setting(containerEl)
+			.setName('Tooltip Border Color')
+			.setDesc('Set the border color of the tooltip')
+			.addText(text => text
+				.setPlaceholder('var(--background-modifier-border)')
+				.setValue(this.plugin.settings.tooltipBorderColor)
+				.onChange(async (value) => {
+					this.plugin.settings.tooltipBorderColor = value;
+					await this.plugin.saveSettings();
+					this.updateStyles();
+				}))
+			.addColorPicker(color => color
+				.setValue(this.plugin.settings.tooltipBorderColor)
+				.onChange(async (value) => {
+					this.plugin.settings.tooltipBorderColor = value;
+					await this.plugin.saveSettings();
+					this.updateStyles();
+				}));
+	}
+
+	// 更新样式
+	updateStyles() {
+		const style = document.createElement('style');
+		style.id = 'hover-reveal-custom-styles';
+		style.textContent = `
+			.hover-reveal-tooltip {
+				color: ${this.plugin.settings.tooltipTextColor} !important;
+				background-color: ${this.plugin.settings.tooltipBackgroundColor} !important;
+				border-color: ${this.plugin.settings.tooltipBorderColor} !important;
+			}
+			.hover-reveal-tooltip::after {
+				border-top-color: ${this.plugin.settings.tooltipBackgroundColor} !important;
+			}
+		`;
+
+		// 移除旧样式
+		const oldStyle = document.getElementById('hover-reveal-custom-styles');
+		if (oldStyle) {
+			oldStyle.remove();
+		}
+
+		// 添加新样式
+		document.head.appendChild(style);
 	}
 }
