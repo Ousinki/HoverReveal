@@ -94,3 +94,42 @@
     visibility: visible !important;
     opacity: 1 !important;
 }
+
+/* 确保元素可以接收点击事件 */
+.workspace-leaf-content .hover-reveal-container,
+.workspace-leaf-content .hover-reveal,
+.workspace-leaf-content .hover-reveal-source {
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 1000;
+}
+
+/* 临时添加明显的背景色以便调试 */
+.workspace-leaf-content .hover-reveal {
+    background-color: rgba(255, 0, 0, 0.1) !important;
+}
+
+.workspace-leaf-content .hover-reveal-source {
+    background-color: rgba(0, 0, 255, 0.1) !important;
+}
+
+/* 确保可见文本可以接收点击事件 */
+.workspace-leaf-content .hover-reveal {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    pointer-events: auto !important;
+}
+
+/* 源码显示时的样式 */
+.workspace-leaf-content .hover-reveal-source {
+    color: var(--text-muted);
+    font-family: var(--font-monospace);
+    font-size: 0.9em;
+    background-color: var(--background-secondary);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid var(--background-modifier-border);
+    white-space: nowrap;
+    cursor: text;
+}

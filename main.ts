@@ -115,7 +115,7 @@ export default class MyPlugin extends Plugin {
 				const fragments = [];
 
 				while ((match = regex.exec(text)) !== null) {
-					console.log('Found match:', match);
+					console.log('找到匹配:', match);
 					
 					// 添加匹配前的文本
 					if (match.index > lastIndex) {
@@ -145,7 +145,7 @@ export default class MyPlugin extends Plugin {
 					tooltip.addClass('hover-reveal-tooltip');
 					tooltip.setText(hoverText);
 					
-					// 点击事件处理 - 修改后的版本
+					// 点击事件处理
 					let isShowingSource = false;
 					
 					const toggleSource = (e: MouseEvent) => {
@@ -165,19 +165,19 @@ export default class MyPlugin extends Plugin {
 						}
 					};
 					
-					// 为容器添加点击事件
-					container.addEventListener('click', toggleSource);
+					// 将点击事件绑定到renderedElement上
+					renderedElement.addEventListener('click', toggleSource);
 					
-					// 为文档添加点击事件，但要确保只添加一次
+					// 为文档添加点击事件，处理点击其他区域时的情况
 					const handleDocumentClick = (e: MouseEvent) => {
 						if (!container.contains(e.target as Node) && isShowingSource) {
 							isShowingSource = false;
-							renderedElement.style.display = 'inline-block';
-							sourceElement.style.display = 'none';
+								renderedElement.style.display = 'inline-block';
+								sourceElement.style.display = 'none';
 						}
 					};
 					
-					// 使用插件的registerDomEvent来注册事件，这样插件禁用时会自动清理
+					// 使用插件的registerDomEvent来注册事件
 					this.registerDomEvent(document, 'click', handleDocumentClick);
 					
 					renderedElement.appendChild(tooltip);
