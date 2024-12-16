@@ -88,9 +88,7 @@ export default class MyPlugin extends Plugin {
 
 		// 注册Markdown后处理器，element是解析后的html DOM节点，context是上下文信息
 		this.registerMarkdownPostProcessor((element, context) => {
-			console.log('处理器被调用');
-			
-			// 处理所有文本节点，而不仅仅是段落
+			// 处理所有文本节点
 			const walker = document.createTreeWalker(
 				element,
 				NodeFilter.SHOW_TEXT,
@@ -104,8 +102,6 @@ export default class MyPlugin extends Plugin {
 			}
 
 			nodesToProcess.forEach(textNode => {
-				console.log('处理文本节点:', textNode.textContent);
-				
 				const text = textNode.textContent;
 				if (!text) return;
 
@@ -115,8 +111,6 @@ export default class MyPlugin extends Plugin {
 				const fragments = [];
 
 				while ((match = regex.exec(text)) !== null) {
-					console.log('找到匹配:', match);
-					
 					// 添加匹配前的文本
 					if (match.index > lastIndex) {
 						fragments.push(document.createTextNode(
@@ -124,7 +118,7 @@ export default class MyPlugin extends Plugin {
 						));
 					}
 
-					const [fullMatch, visibleText, hoverText] = match;
+					const [fullMatch, visibleText, tooltipText] = match;
 					
 					// 创建悬停元素
 					const container = document.createElement('span');
@@ -135,67 +129,26 @@ export default class MyPlugin extends Plugin {
 					renderedElement.addClass('hover-reveal');
 					renderedElement.setText(visibleText);
 					
-					// 创建原始格式显示元素
-					const sourceElement = document.createElement('span');
-					sourceElement.addClass('hover-reveal-source');
-					sourceElement.setText(fullMatch);
-					sourceElement.style.display = 'none';
-					
+					// 创建提示框
 					const tooltip = document.createElement('div');
 					tooltip.addClass('hover-reveal-tooltip');
-					tooltip.setText(hoverText);
-					
-					// 点击事件处理
-					let isShowingSource = false;
-					
-					const toggleSource = (e: MouseEvent) => {
-						console.log('触发点击事件');
-						console.log('当前显示状态:', isShowingSource);
-						e.stopPropagation();
-						isShowingSource = !isShowingSource;
-						
-						if (isShowingSource) {
-							console.log('切换到源码显示');
-							renderedElement.style.display = 'none';
-							sourceElement.style.display = 'inline-block';
-						} else {
-							console.log('切换到渲染显示');
-							renderedElement.style.display = 'inline-block';
-							sourceElement.style.display = 'none';
-						}
-					};
-					
-					// 将点击事件绑定到renderedElement上
-					renderedElement.addEventListener('click', toggleSource);
-					
-					// 为文档添加点击事件，处理点击其他区域时的情况
-					const handleDocumentClick = (e: MouseEvent) => {
-						if (!container.contains(e.target as Node) && isShowingSource) {
-							isShowingSource = false;
-								renderedElement.style.display = 'inline-block';
-								sourceElement.style.display = 'none';
-						}
-					};
-					
-					// 使用插件的registerDomEvent来注册事件
-					this.registerDomEvent(document, 'click', handleDocumentClick);
+					tooltip.setText(tooltipText);
 					
 					renderedElement.appendChild(tooltip);
-					container.appendChild(sourceElement);
 					container.appendChild(renderedElement);
 					fragments.push(container);
 					
 					lastIndex = match.index + fullMatch.length;
 				}
 
-				// 添加剩余的文本
+				// 添加剩余文本
 				if (lastIndex < text.length) {
 					fragments.push(document.createTextNode(
 						text.slice(lastIndex)
 					));
 				}
 
-				// 只有在找到匹配时才替换节点
+				// 替换节点
 				if (fragments.length > 0 && textNode.parentNode) {
 					const fragment = document.createDocumentFragment();
 					fragments.forEach(f => fragment.appendChild(f));
@@ -224,24 +177,49 @@ export default class MyPlugin extends Plugin {
 
 	private hoverRevealExtension(): Extension {
 		class TooltipWidget extends WidgetType {
+			private isEditing = false;
+
 			constructor(
 				readonly visibleText: string,
-				readonly tooltipText: string
+				readonly tooltipText: string,
+				readonly from: number,
+				readonly to: number,
+				readonly view: EditorView
 			) {
 				super();
 			}
 
 			toDOM() {
 				const span = document.createElement('span');
-				span.addClass('hover-reveal');
-				span.setText(this.visibleText);
+				
+				// 根据编辑状态决定显示方式
+				if (this.isEditing) {
+					span.textContent = `[${this.visibleText}]{${this.tooltipText}}`;
+				} else {
+					span.addClass('hover-reveal');
+					span.setText(this.visibleText);
 
-				const tooltip = document.createElement('div');
-				tooltip.addClass('hover-reveal-tooltip');
-				tooltip.setText(this.tooltipText);
+					const tooltip = document.createElement('div');
+					tooltip.addClass('hover-reveal-tooltip');
+					tooltip.setText(this.tooltipText);
+					span.appendChild(tooltip);
+				}
 
-				span.appendChild(tooltip);
+				// 添加点击事件
+				span.addEventListener('click', (e) => {
+					e.preventDefault();
+					this.isEditing = !this.isEditing;
+					this.view.requestMeasure();
+				});
+
 				return span;
+			}
+
+			eq(other: TooltipWidget): boolean {
+				return other.visibleText === this.visibleText && 
+					   other.tooltipText === this.tooltipText &&
+					   other.from === this.from &&
+					   other.to === this.to;
 			}
 		}
 
@@ -253,7 +231,7 @@ export default class MyPlugin extends Plugin {
 			}
 
 			update(update: ViewUpdate) {
-				if (update.docChanged || update.viewportChanged) {
+				if (update.docChanged || update.viewportChanged || update.selectionSet) {
 					this.decorations = this.buildDecorations(update.view);
 				}
 			}
@@ -261,7 +239,7 @@ export default class MyPlugin extends Plugin {
 			buildDecorations(view: EditorView) {
 				const widgets = [];
 				const content = view.state.doc.toString();
-				const regex = /!(.*?)!\((.*?)\)/g;
+				const regex = /\[(.*?)\]\{(.*?)\}/g;
 				let match;
 
 				while ((match = regex.exec(content)) !== null) {
@@ -270,7 +248,13 @@ export default class MyPlugin extends Plugin {
 					const to = from + fullMatch.length;
 
 					widgets.push(Decoration.replace({
-						widget: new TooltipWidget(visibleText, tooltipText),
+						widget: new TooltipWidget(
+							visibleText, 
+							tooltipText,
+							from,
+							to,
+							view
+						),
 						inclusive: true
 					}).range(from, to));
 				}
@@ -278,7 +262,13 @@ export default class MyPlugin extends Plugin {
 				return Decoration.set(widgets);
 			}
 		}, {
-			decorations: v => v.decorations
+			decorations: v => v.decorations,
+			eventHandlers: {
+				mousedown: (e: MouseEvent, view: EditorView) => {
+					// 可以在这里添加额外的点击处理逻辑
+					return false;
+				}
+			}
 		});
 
 		return [tooltipPlugin];

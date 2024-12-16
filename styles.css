@@ -133,3 +133,13 @@
     white-space: nowrap;
     cursor: text;
 }
+
+/* 编辑状态的样式 */
+.hover-reveal-editing {
+    font-family: var(--font-monospace);
+    color: var(--text-muted);
+    background-color: var(--background-secondary);
+    padding: 2px 4px;
+    border-radius: 4px;
+    border: 1px solid var(--background-modifier-border);
+}
