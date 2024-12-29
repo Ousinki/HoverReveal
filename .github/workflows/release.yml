@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - "*"
+  workflow_dispatch:  # 允许手动触发
 
 env:
   PLUGIN_NAME: hover-reveal # Change this to match the id of your plugin.
