@@ -264,7 +264,7 @@ export default class MyPlugin extends Plugin {
 				return Decoration.set(widgets);
 			}
 		}, {
-			decorations: v => v.decorations,
+			decorations: v => v.decorations as DecorationSet,
 			eventHandlers: {
 				mousedown: (e: MouseEvent, view: EditorView) => {
 					// 可以在这里添加额外的点击处理逻辑
