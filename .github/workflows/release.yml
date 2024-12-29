@@ -9,6 +9,9 @@ on:
 env:
   PLUGIN_NAME: hover-reveal # Change this to match the id of your plugin.
 
+permissions:
+  checks: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
