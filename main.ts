@@ -307,7 +307,7 @@ class SampleSettingTab extends PluginSettingTab {
 
 		// 添加重置按钮到右下角
 		const resetButton = containerEl.createEl('button', {
-			text: '重置为默认样式',
+			text: 'Reset',
 			cls: 'hover-reveal-reset-button',
 		});
 		
@@ -337,7 +337,7 @@ class SampleSettingTab extends PluginSettingTab {
 			this.updateStyles();
 			
 			// 显示提示
-			new Notice('样式已重置为默认设置');
+			new Notice('Reset Styles to Default');
 		});
 
 		// 文字颜色设置

@@ -11,6 +11,9 @@ env:
 
 permissions:
   checks: write
+  contents: write
+  pull-requests: write
+  repository-projects: write
 
 jobs:
   build:
