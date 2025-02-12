@@ -54,31 +54,3 @@
     cursor: pointer;
 }
 
-/* 原始格式样式 */
-.workspace-leaf-content .hover-reveal-source {
-    color: var(--text-muted);
-    font-family: var(--font-monospace);
-    font-size: 0.9em;
-    background-color: var(--background-secondary);
-    padding: 2px 6px;
-    border-radius: 4px;
-    border: 1px solid var(--background-modifier-border);
-    white-space: nowrap;
-    cursor: text;
-}
-
-/* 确保源码显示时tooltip不显示 */
-.workspace-leaf-content .hover-reveal[style*="display: none"] + .hover-reveal-tooltip,
-.workspace-leaf-content .hover-reveal-source[style*="display: inline-block"] ~ .hover-reveal .hover-reveal-tooltip {
-    display: none !important;
-}
-
-/* 编辑状态的样式 */
-.hover-reveal-editing {
-    font-family: var(--font-monospace);
-    color: var(--text-muted);
-    background-color: var(--background-secondary);
-    padding: 2px 4px;
-    border-radius: 4px;
-    border: 1px solid var(--background-modifier-border);
-}

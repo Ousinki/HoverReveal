@@ -22,7 +22,6 @@ export default class MyPlugin extends Plugin {
 	settings: MyPluginSettings;
 
 	async onload() {
-		console.log('HoverReveal plugin loading...');
 		await this.loadSettings();
 
 		// // This creates an icon in the left ribbon.
@@ -52,7 +51,6 @@ export default class MyPlugin extends Plugin {
 			id: 'sample-editor-command',
 			name: 'Sample editor command',
 			editorCallback: (editor: Editor, view: MarkdownView) => {
-				console.log(editor.getSelection());
 				editor.replaceSelection('Sample Editor Command');
 			}
 		});
@@ -78,12 +76,6 @@ export default class MyPlugin extends Plugin {
 
 		// This adds a settings tab so the user can configure various aspects of the plugin
 		this.addSettingTab(new SampleSettingTab(this.app, this));
-
-		// If the plugin hooks up any global DOM events (on parts of the app that doesn't belong to this plugin)
-		// Using this function will automatically remove the event listener when this plugin is disabled.
-		this.registerDomEvent(document, 'click', (evt: MouseEvent) => {
-			console.log('click', evt);
-		});
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
@@ -179,14 +171,13 @@ export default class MyPlugin extends Plugin {
 
 	private hoverRevealExtension(): Extension {
 		class TooltipWidget extends WidgetType {
-			private isEditing = false;
-
 			constructor(
 				readonly visibleText: string,
 				readonly tooltipText: string,
 				readonly from: number,
 				readonly to: number,
-				readonly view: EditorView
+				readonly view: EditorView,
+				readonly isActive: boolean
 			) {
 				super();
 			}
@@ -194,8 +185,7 @@ export default class MyPlugin extends Plugin {
 			toDOM() {
 				const span = document.createElement('span');
 				
-				// 根据编辑状态决定显示方式
-				if (this.isEditing) {
+				if (this.isActive) {
 					span.textContent = `[${this.visibleText}]{${this.tooltipText}}`;
 				} else {
 					span.addClass('hover-reveal');
@@ -207,13 +197,6 @@ export default class MyPlugin extends Plugin {
 					span.appendChild(tooltip);
 				}
 
-				// 添加点击事件
-				span.addEventListener('click', (e) => {
-					e.preventDefault();
-					this.isEditing = !this.isEditing;
-					this.view.requestMeasure();
-				});
-
 				return span;
 			}
 
@@ -221,7 +204,8 @@ export default class MyPlugin extends Plugin {
 				return other.visibleText === this.visibleText && 
 					   other.tooltipText === this.tooltipText &&
 					   other.from === this.from &&
-					   other.to === this.to;
+					   other.to === this.to &&
+					   other.isActive === this.isActive;
 			}
 		}
 
@@ -249,28 +233,33 @@ export default class MyPlugin extends Plugin {
 					const from = match.index;
 					const to = from + fullMatch.length;
 
-					widgets.push(Decoration.replace({
-						widget: new TooltipWidget(
-							visibleText, 
-							tooltipText,
-							from,
-							to,
-							view
-						),
-						inclusive: true
-					}).range(from, to));
+					// 获取当前光标位置
+					const cursor = view.state.selection.main.from;
+					// 检查光标是否在匹配文本内部
+					const isCursorInside = cursor >= from && cursor <= to;
+
+					if (isCursorInside) {
+
+					} else {
+						// 其他情况显示渲染状态
+						widgets.push(Decoration.replace({
+							widget: new TooltipWidget(
+								visibleText, 
+								tooltipText,
+								from,
+								to,
+								view,
+								false
+							),
+							inclusive: true
+						}).range(from, to));
+					}
 				}
 
 				return Decoration.set(widgets);
 			}
 		}, {
-			decorations: v => v.decorations as DecorationSet,
-			eventHandlers: {
-				mousedown: (e: MouseEvent, view: EditorView) => {
-					// 可以在这里添加额外的点击处理逻辑
-					return false;
-				}
-			}
+			decorations: v => v.decorations as DecorationSet
 		});
 
 		return [tooltipPlugin];

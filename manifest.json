@@ -3,10 +3,9 @@
 	"name": "hover reveal",
 	"version": "1.0.1",
 	"minAppVersion": "0.15.0",
-	"description": "The plugin shows hidden text in a tooltip when you hover over specific elements.",
+	"description": "The plugin shows hidden text in a tooltip when you hover over specific elements. use: [visibleText]{tooltipText}",
 	"author": "shawn yang",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"authorUrl": "https://github.com/Asrieal/HoverReveal",
 	"isDesktopOnly": false,
 	"styles": ["styles.css"]
 }
