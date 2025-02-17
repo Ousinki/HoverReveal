@@ -3,7 +3,7 @@
     position: relative; /* 用于定位悬浮提示 */
     text-decoration: underline; /* 添加下划线 */
     font-weight: bold; /* 加粗字体 */
-    color: inherit; /* 继承父元素的颜色 */
+    color: var(--bold-color); /* 使用主题的加粗文本颜色 */
     background-color: transparent; /* 移除背景 */
     border: none; /* 移除边框 */
     padding: 0; /* 移除填充 */

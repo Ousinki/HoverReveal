@@ -9,13 +9,15 @@ interface MyPluginSettings {
 	tooltipTextColor: string;
 	tooltipBackgroundColor: string;
 	tooltipBorderColor: string;
+	boldTextColor: string;
 }
 
 const DEFAULT_SETTINGS: MyPluginSettings = {
 	mySetting: 'default',
 	tooltipTextColor: 'var(--text-normal)',
 	tooltipBackgroundColor: 'var(--background-primary)',
-	tooltipBorderColor: 'var(--background-modifier-border)'
+	tooltipBorderColor: 'var(--background-modifier-border)',
+	boldTextColor: 'var(--bold-color)'
 }
 
 export default class MyPlugin extends Plugin {
@@ -33,10 +35,6 @@ export default class MyPlugin extends Plugin {
 		
 		// // Perform additional things with the ribbon 
 		// ribbonIconEl.addClass('my-plugin-ribbon-class');
-
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status Bar Text');
 
 		// This adds a simple command that can be triggered anywhere
 		this.addCommand({
@@ -317,6 +315,7 @@ class SampleSettingTab extends PluginSettingTab {
 			this.plugin.settings.tooltipTextColor = DEFAULT_SETTINGS.tooltipTextColor;
 			this.plugin.settings.tooltipBackgroundColor = DEFAULT_SETTINGS.tooltipBackgroundColor;
 			this.plugin.settings.tooltipBorderColor = DEFAULT_SETTINGS.tooltipBorderColor;
+			this.plugin.settings.boldTextColor = DEFAULT_SETTINGS.boldTextColor;
 			
 			// 保存设置
 			await this.plugin.saveSettings();
@@ -388,6 +387,26 @@ class SampleSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 					this.updateStyles();
 				}));
+
+		// 粗体字颜色设置
+		new Setting(containerEl)
+			.setName('Bold Text Color')
+			.setDesc('Set the color of the bold text')
+			.addText(text => text
+				.setPlaceholder('var(--bold-color)')
+				.setValue(this.plugin.settings.boldTextColor)
+				.onChange(async (value) => {
+					this.plugin.settings.boldTextColor = value;
+					await this.plugin.saveSettings();
+					this.updateStyles();
+				}))
+			.addColorPicker(color => color
+				.setValue(this.plugin.settings.boldTextColor)
+				.onChange(async (value) => {
+					this.plugin.settings.boldTextColor = value;
+					await this.plugin.saveSettings();
+					this.updateStyles();
+				}));
 	}
 
 	// 更新样式
@@ -402,6 +421,9 @@ class SampleSettingTab extends PluginSettingTab {
 			}
 			.hover-reveal-tooltip::after {
 				border-top-color: ${this.plugin.settings.tooltipBackgroundColor} !important;
+			}
+			.hover-reveal {
+				color: ${this.plugin.settings.boldTextColor} !important;
 			}
 		`;
 
