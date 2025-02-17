@@ -6,6 +6,12 @@
 
 A plugin that shows hidden text in a tooltip when you hover over specific elements.
 
+### Installation
+
+1. Download the latest release `.zip` file
+2. Extract the zip file to your Obsidian vault's plugins folder: `.obsidian/plugins/`
+3. Restart Obsidian and enable the plugin
+
 ### Usage
 
 Use the following syntax in your notes:
@@ -41,6 +47,12 @@ Use the Reset button to restore default settings.
 ## 中文
 
 一个在鼠标悬停时显示隐藏文本的 Obsidian 插件。
+
+### 安装方法
+
+1. 下载最新版本的 `.zip` 文件
+2. 解压文件到你的 Obsidian 插件文件夹：`.obsidian/plugins/`
+3. 重启 Obsidian，并启用插件
 
 ### 使用方法
 
