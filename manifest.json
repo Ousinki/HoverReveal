@@ -1,7 +1,7 @@
 {
 	"id": "hover-reveal",
 	"name": "Hover Reveal",
-	"version": "1.0.3",
+	"version": "1.0.4",
 	"minAppVersion": "0.15.0",
 	"description": "The plugin shows hidden text in a tooltip when you hover over specific elements. use: [visibleText]{tooltipText}.",
 	"author": "Shawn Yang",
