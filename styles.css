@@ -1,56 +1,65 @@
-/* .hover-reveal 样式 */
+
 .workspace-leaf-content .hover-reveal {
-    position: relative; /* 用于定位悬浮提示 */
-    text-decoration: underline; /* 添加下划线 */
-    font-weight: bold; /* 加粗字体 */
-    color: var(--bold-color); /* 使用主题的加粗文本颜色 */
-    background-color: transparent; /* 移除背景 */
-    border: none; /* 移除边框 */
-    padding: 0; /* 移除填充 */
-    margin: 0; /* 移除外间距 */
-    cursor: pointer; /* 鼠标悬停时显示手形 */
+    position: relative;
+    text-decoration: underline;
+    font-weight: bold;
+    color: var(--bold-color);
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
 }
 
-/* 悬浮提示框样式 */
+
 .workspace-leaf-content .hover-reveal-tooltip {
-    visibility: hidden; /* 初始为隐藏 */
-    position: absolute; /* 相对定位 */
-    bottom: 100%; /* 定位在元素上方 */
-    left: 50%; /* 居中显示 */
-    transform: translateX(-50%); /* 居中 */
-    padding: 5px 10px; /* 内边距 */
-    background-color: var(--background-primary); /* 修改为主题颜色 */
-    border: 1px solid var(--background-modifier-border); /* 添加边框 */
-    color: var(--text-normal); /* 使用主题的文字颜色 */
-    border-radius: 4px; /* 圆角边框 */
+    visibility: hidden;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 5px 10px;
+    background-color: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    color: var(--text-normal);
+    border-radius: 4px;
     font-size: 0.9em;
-    white-space: nowrap; /* 防止文本换行 */
-    z-index: 1000; /* 保证层级高 */
-    opacity: 0; /* 初始透明度 */
-    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out; /* 过渡效果 */
+    white-space: nowrap;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
 }
 
-/* 悬浮显示提示框 */
 .workspace-leaf-content .hover-reveal:hover .hover-reveal-tooltip {
-    visibility: visible; /* 显示悬浮提示框 */
-    opacity: 1; /* 透明度从 0 变为 1 */
+    visibility: visible; 
+    opacity: 1; 
 }
 
-/* 悬浮提示框的小箭头 */
 .workspace-leaf-content .hover-reveal-tooltip::after {
     content: ''; 
     position: absolute;
-    top: 100%; /* 箭头放置在下方 */
-    left: 50%; /* 居中显示 */
+    top: 100%; 
+    left: 50%; 
     transform: translateX(-50%);
     border: 5px solid transparent;
-    border-top-color: var(--background-primary); /* 小箭头的颜色与背景一致 */
+    border-top-color: var(--background-primary);
 }
 
-/* 容器样式 */
 .workspace-leaf-content .hover-reveal-container {
     position: relative;
     display: inline-block;
+    cursor: pointer;
+}
+
+.hover-reveal-reset-button {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    padding: 8px 12px;
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+    border: none;
+    border-radius: 4px;
     cursor: pointer;
 }
 

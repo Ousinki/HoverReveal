@@ -4,7 +4,7 @@ import { Extension } from '@codemirror/state';
 
 // Remember to rename these classes and interfaces!
 
-interface MyPluginSettings {
+interface HoverRevealSettings {
 	mySetting: string;
 	tooltipTextColor: string;
 	tooltipBackgroundColor: string;
@@ -12,7 +12,7 @@ interface MyPluginSettings {
 	boldTextColor: string;
 }
 
-const DEFAULT_SETTINGS: MyPluginSettings = {
+const DEFAULT_SETTINGS: HoverRevealSettings = {
 	mySetting: 'default',
 	tooltipTextColor: 'var(--text-normal)',
 	tooltipBackgroundColor: 'var(--background-primary)',
@@ -20,63 +20,14 @@ const DEFAULT_SETTINGS: MyPluginSettings = {
 	boldTextColor: 'var(--bold-color)'
 }
 
-export default class MyPlugin extends Plugin {
-	settings: MyPluginSettings;
+export default class HoverRevealPlugin extends Plugin {
+	settings: HoverRevealSettings;
 
 	async onload() {
 		await this.loadSettings();
 
-		// // This creates an icon in the left ribbon.
-		// const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
-		// 	// Called when the user clicks the icon.
-		// 	new Notice('This is a notice!');
-		// });
-
-		
-		// // Perform additional things with the ribbon 
-		// ribbonIconEl.addClass('my-plugin-ribbon-class');
-
-		// This adds a simple command that can be triggered anywhere
-		this.addCommand({
-			id: 'open-sample-modal-simple',
-			name: 'Open sample modal (simple)',
-			callback: () => {
-				new SampleModal(this.app).open();
-			}
-		});
-		// This adds an editor command that can perform some operation on the current editor instance
-		this.addCommand({
-			id: 'sample-editor-command',
-			name: 'Sample editor command',
-			editorCallback: (editor: Editor, view: MarkdownView) => {
-				editor.replaceSelection('Sample Editor Command');
-			}
-		});
-		// This adds a complex command that can check whether the current state of the app allows execution of the command
-		this.addCommand({
-			id: 'open-sample-modal-complex',
-			name: 'Open sample modal (complex)',
-			checkCallback: (checking: boolean) => {
-				// Conditions to check
-				const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
-				if (markdownView) {
-					// If checking is true, we're simply "checking" if the command can be run.
-					// If checking is false, then we want to actually perform the operation.
-					if (!checking) {
-						new SampleModal(this.app).open();
-					}
-
-					// This command will only show up in Command Palette when the check function returns true
-					return true;
-				}
-			}
-		});
-
-		// This adds a settings tab so the user can configure various aspects of the plugin
-		this.addSettingTab(new SampleSettingTab(this.app, this));
-
-		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+		// 添加设置选项卡
+		this.addSettingTab(new HoverRevealSettingTab(this.app, this));
 
 		// 注册Markdown后处理器，element是解析后的html DOM节点，context是上下文信息
 		this.registerMarkdownPostProcessor((element, context) => {
@@ -151,12 +102,14 @@ export default class MyPlugin extends Plugin {
 
 		// 添加编辑器扩展
 		this.registerEditorExtension(this.hoverRevealExtension());
-
-		console.log('HoverReveal plugin loaded');
 	}
 
 	onunload() {
-
+		// 移除自定义样式
+		const oldStyle = document.getElementById('hover-reveal-custom-styles');
+		if (oldStyle) {
+			oldStyle.remove();
+		}
 	}
 
 	async loadSettings() {
@@ -264,26 +217,10 @@ export default class MyPlugin extends Plugin {
 	}
 }
 
-class SampleModal extends Modal {
-	constructor(app: App) {
-		super(app);
-	}
+class HoverRevealSettingTab extends PluginSettingTab {
+	plugin: HoverRevealPlugin;
 
-	onOpen() {
-		const {contentEl} = this;
-		contentEl.setText('Woah!');
-	}
-
-	onClose() {
-		const {contentEl} = this;
-		contentEl.empty();
-	}
-}
-
-class SampleSettingTab extends PluginSettingTab {
-	plugin: MyPlugin;
-
-	constructor(app: App, plugin: MyPlugin) {
+	constructor(app: App, plugin: HoverRevealPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
 	}
@@ -298,18 +235,6 @@ class SampleSettingTab extends PluginSettingTab {
 			cls: 'hover-reveal-reset-button',
 		});
 		
-		resetButton.style.cssText = `
-			position: absolute;
-			bottom: 20px;
-			right: 20px;
-			padding: 8px 12px;
-			background-color: var(--interactive-accent);
-			color: var(--text-on-accent);
-			border: none;
-			border-radius: 4px;
-			cursor: pointer;
-		`;
-
 		resetButton.addEventListener('click', async () => {
 			// 重置为默认设置
 			this.plugin.settings.tooltipTextColor = DEFAULT_SETTINGS.tooltipTextColor;
@@ -330,7 +255,7 @@ class SampleSettingTab extends PluginSettingTab {
 
 		// 文字颜色设置
 		new Setting(containerEl)
-			.setName('Tooltip Text Color')
+			.setName('Tooltip text color')
 			.setDesc('Set the text color of the tooltip')
 			.addText(text => text
 				.setPlaceholder('#000000')
