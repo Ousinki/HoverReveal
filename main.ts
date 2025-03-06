@@ -5,7 +5,6 @@ import { Extension } from '@codemirror/state';
 // Remember to rename these classes and interfaces!
 
 interface HoverRevealSettings {
-	mySetting: string;
 	tooltipTextColor: string;
 	tooltipBackgroundColor: string;
 	tooltipBorderColor: string;
@@ -13,7 +12,6 @@ interface HoverRevealSettings {
 }
 
 const DEFAULT_SETTINGS: HoverRevealSettings = {
-	mySetting: 'default',
 	tooltipTextColor: 'var(--text-normal)',
 	tooltipBackgroundColor: 'var(--background-primary)',
 	tooltipBorderColor: 'var(--background-modifier-border)',
@@ -26,12 +24,12 @@ export default class HoverRevealPlugin extends Plugin {
 	async onload() {
 		await this.loadSettings();
 
-		// 添加设置选项卡
+		
 		this.addSettingTab(new HoverRevealSettingTab(this.app, this));
 
-		// 注册Markdown后处理器，element是解析后的html DOM节点，context是上下文信息
+		
 		this.registerMarkdownPostProcessor((element, context) => {
-			// 处理所有文本节点
+			
 			const walker = document.createTreeWalker(
 				element,
 				NodeFilter.SHOW_TEXT,
@@ -54,7 +52,7 @@ export default class HoverRevealPlugin extends Plugin {
 				const fragments = [];
 
 				while ((match = regex.exec(text)) !== null) {
-					// 添加匹配前的文本
+					
 					if (match.index > lastIndex) {
 						fragments.push(document.createTextNode(
 							text.slice(lastIndex, match.index)
@@ -63,16 +61,16 @@ export default class HoverRevealPlugin extends Plugin {
 
 					const [fullMatch, visibleText, tooltipText] = match;
 					
-					// 创建悬停元素
+					
 					const container = document.createElement('span');
 					container.addClass('hover-reveal-container');
 					
-					// 创建渲染后的元素
+					
 					const renderedElement = document.createElement('span');
 					renderedElement.addClass('hover-reveal');
 					renderedElement.setText(visibleText);
 					
-					// 创建提示框
+					
 					const tooltip = document.createElement('div');
 					tooltip.addClass('hover-reveal-tooltip');
 					tooltip.setText(tooltipText);
@@ -84,14 +82,14 @@ export default class HoverRevealPlugin extends Plugin {
 					lastIndex = match.index + fullMatch.length;
 				}
 
-				// 添加剩余文本
+				
 				if (lastIndex < text.length) {
 					fragments.push(document.createTextNode(
 						text.slice(lastIndex)
 					));
 				}
 
-				// 替换节点
+				
 				if (fragments.length > 0 && textNode.parentNode) {
 					const fragment = document.createDocumentFragment();
 					fragments.forEach(f => fragment.appendChild(f));
@@ -100,12 +98,12 @@ export default class HoverRevealPlugin extends Plugin {
 			});
 		});
 
-		// 添加编辑器扩展
+		
 		this.registerEditorExtension(this.hoverRevealExtension());
 	}
 
 	onunload() {
-		// 移除自定义样式
+		
 		const oldStyle = document.getElementById('hover-reveal-custom-styles');
 		if (oldStyle) {
 			oldStyle.remove();
@@ -184,15 +182,14 @@ export default class HoverRevealPlugin extends Plugin {
 					const from = match.index;
 					const to = from + fullMatch.length;
 
-					// 获取当前光标位置
+					
 					const cursor = view.state.selection.main.from;
-					// 检查光标是否在匹配文本内部
+					
 					const isCursorInside = cursor >= from && cursor <= to;
 
 					if (isCursorInside) {
 
 					} else {
-						// 其他情况显示渲染状态
 						widgets.push(Decoration.replace({
 							widget: new TooltipWidget(
 								visibleText, 
@@ -229,31 +226,31 @@ class HoverRevealSettingTab extends PluginSettingTab {
 		const {containerEl} = this;
 		containerEl.empty();
 
-		// 添加重置按钮到右下角
-		const resetButton = containerEl.createEl('button', {
-			text: 'Reset',
-			cls: 'hover-reveal-reset-button',
-		});
-		
-		resetButton.addEventListener('click', async () => {
-			// 重置为默认设置
-			this.plugin.settings.tooltipTextColor = DEFAULT_SETTINGS.tooltipTextColor;
-			this.plugin.settings.tooltipBackgroundColor = DEFAULT_SETTINGS.tooltipBackgroundColor;
-			this.plugin.settings.tooltipBorderColor = DEFAULT_SETTINGS.tooltipBorderColor;
-			this.plugin.settings.boldTextColor = DEFAULT_SETTINGS.boldTextColor;
-			
-			// 保存设置
-			await this.plugin.saveSettings();
-			
-			// 更新UI和样式
-			this.display();
-			this.updateStyles();
-			
-			// 显示提示
-			new Notice('Reset Styles to Default');
-		});
+		// Add reset setting at the top
+		new Setting(containerEl)
+			.setName('Reset settings')
+			.setDesc('Reset all settings to default values')
+			.addButton(button => button
+				.setButtonText('Reset')
+				.onClick(async () => {
+					// Reset to default settings
+					this.plugin.settings.tooltipTextColor = DEFAULT_SETTINGS.tooltipTextColor;
+					this.plugin.settings.tooltipBackgroundColor = DEFAULT_SETTINGS.tooltipBackgroundColor;
+					this.plugin.settings.tooltipBorderColor = DEFAULT_SETTINGS.tooltipBorderColor;
+					this.plugin.settings.boldTextColor = DEFAULT_SETTINGS.boldTextColor;
+					
+					// Save settings
+					await this.plugin.saveSettings();
+					
+					// Update UI and styles
+					this.display();
+					this.updateStyles();
+					
+					// Show notification
+					new Notice('Reset settings to default');
+				}));
 
-		// 文字颜色设置
+		// Text color setting
 		new Setting(containerEl)
 			.setName('Tooltip text color')
 			.setDesc('Set the text color of the tooltip')
@@ -273,9 +270,9 @@ class HoverRevealSettingTab extends PluginSettingTab {
 					this.updateStyles();
 				}));
 
-		// 背景颜色设置  
+		// Background color setting
 		new Setting(containerEl)
-			.setName('Tooltip Background Color')
+			.setName('Tooltip background color')
 			.setDesc('Set the background color of the tooltip')
 			.addText(text => text
 				.setPlaceholder('var(--background-primary)')
@@ -293,9 +290,9 @@ class HoverRevealSettingTab extends PluginSettingTab {
 					this.updateStyles();
 				}));
 
-		// 边框颜色设置
+		// Border color setting
 		new Setting(containerEl)
-			.setName('Tooltip Border Color')
+			.setName('Tooltip border color')
 			.setDesc('Set the border color of the tooltip')
 			.addText(text => text
 				.setPlaceholder('var(--background-modifier-border)')
@@ -313,9 +310,9 @@ class HoverRevealSettingTab extends PluginSettingTab {
 					this.updateStyles();
 				}));
 
-		// 粗体字颜色设置
+		// Bold text color setting
 		new Setting(containerEl)
-			.setName('Bold Text Color')
+			.setName('Bold text color')
 			.setDesc('Set the color of the bold text')
 			.addText(text => text
 				.setPlaceholder('var(--bold-color)')
@@ -334,7 +331,7 @@ class HoverRevealSettingTab extends PluginSettingTab {
 				}));
 	}
 
-	// 更新样式
+
 	updateStyles() {
 		const style = document.createElement('style');
 		style.id = 'hover-reveal-custom-styles';
@@ -352,13 +349,13 @@ class HoverRevealSettingTab extends PluginSettingTab {
 			}
 		`;
 
-		// 移除旧样式
+
 		const oldStyle = document.getElementById('hover-reveal-custom-styles');
 		if (oldStyle) {
 			oldStyle.remove();
 		}
 
-		// 添加新样式
+
 		document.head.appendChild(style);
 	}
 }
