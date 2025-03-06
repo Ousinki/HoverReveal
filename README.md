@@ -1,10 +1,10 @@
-# Hover Reveal Plugin for Obsidian | 悬浮提示插件
+# Hover Reveal | 悬浮提示插件
 
 [English](#english) | [中文](#中文)
 
 ## English
 
-A plugin that shows hidden text in a tooltip when you hover over specific elements.
+Shows hidden text in tooltips when hovering over marked elements using [visibleText]{tooltipText} syntax.
 
 ### Installation
 
