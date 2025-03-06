@@ -212,6 +212,31 @@ export default class HoverRevealPlugin extends Plugin {
 
 		return [tooltipPlugin];
 	}
+
+	updateStyles() {
+		const style = document.createElement('style');
+		style.id = 'hover-reveal-custom-styles';
+		style.textContent = `
+			.hover-reveal-tooltip {
+				color: ${this.settings.tooltipTextColor} !important;
+				background-color: ${this.settings.tooltipBackgroundColor} !important;
+				border-color: ${this.settings.tooltipBorderColor} !important;
+			}
+			.hover-reveal-tooltip::after {
+				border-top-color: ${this.settings.tooltipBackgroundColor} !important;
+			}
+			.hover-reveal {
+				color: ${this.settings.boldTextColor} !important;
+			}
+		`;
+
+		const oldStyle = document.getElementById('hover-reveal-custom-styles');
+		if (oldStyle) {
+			oldStyle.remove();
+		}
+
+		document.head.appendChild(style);
+	}
 }
 
 class HoverRevealSettingTab extends PluginSettingTab {
@@ -220,6 +245,25 @@ class HoverRevealSettingTab extends PluginSettingTab {
 	constructor(app: App, plugin: HoverRevealPlugin) {
 		super(app, plugin);
 		this.plugin = plugin;
+	}
+
+	private getComputedColor(cssVar: string): string {
+		// 创建一个临时元素来获取计算后的颜色
+		const temp = document.createElement('div');
+		document.body.appendChild(temp);
+		temp.style.color = cssVar;
+		
+		// 获取计算后的颜色
+		const computedColor = getComputedStyle(temp).color;
+		document.body.removeChild(temp);
+
+		// 将 rgb 转换为 16 进制
+		if (computedColor.startsWith('rgb')) {
+			const [r, g, b] = computedColor.match(/\d+/g)?.map(Number) || [0, 0, 0];
+			return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+		}
+		
+		return computedColor || cssVar;
 	}
 
 	display(): void {
@@ -253,29 +297,30 @@ class HoverRevealSettingTab extends PluginSettingTab {
 		// Text color setting
 		let textColorText: any;
 		let textColorPicker: any;
+		const computedTextColor = this.getComputedColor(this.plugin.settings.tooltipTextColor);
 		new Setting(containerEl)
 			.setName('Tooltip text color')
 			.setDesc('Set the text color of the tooltip')
 			.addText(text => {
 				textColorText = text
-					.setPlaceholder('#000000')
-					.setValue(this.plugin.settings.tooltipTextColor)
+					.setPlaceholder('var(--text-normal)')
+					.setValue(computedTextColor)
 					.onChange(async (value) => {
 						this.plugin.settings.tooltipTextColor = value;
 						textColorPicker.setValue(value);
 						await this.plugin.saveSettings();
-						this.updateStyles();
+						this.plugin.updateStyles();
 					});
 				return textColorText;
 			})
 			.addColorPicker(color => {
 				textColorPicker = color
-					.setValue(this.plugin.settings.tooltipTextColor)
+					.setValue(computedTextColor)
 					.onChange(async (value) => {
 						this.plugin.settings.tooltipTextColor = value;
 						textColorText.setValue(value);
 						await this.plugin.saveSettings();
-						this.updateStyles();
+						this.plugin.updateStyles();
 					});
 				return textColorPicker;
 			});
@@ -283,29 +328,30 @@ class HoverRevealSettingTab extends PluginSettingTab {
 		// Background color setting
 		let bgColorText: any;
 		let bgColorPicker: any;
+		const computedBgColor = this.getComputedColor(this.plugin.settings.tooltipBackgroundColor);
 		new Setting(containerEl)
 			.setName('Tooltip background color')
 			.setDesc('Set the background color of the tooltip')
 			.addText(text => {
 				bgColorText = text
 					.setPlaceholder('var(--background-primary)')
-					.setValue(this.plugin.settings.tooltipBackgroundColor)
+					.setValue(computedBgColor)
 					.onChange(async (value) => {
 						this.plugin.settings.tooltipBackgroundColor = value;
 						bgColorPicker.setValue(value);
 						await this.plugin.saveSettings();
-						this.updateStyles();
+						this.plugin.updateStyles();
 					});
 				return bgColorText;
 			})
 			.addColorPicker(color => {
 				bgColorPicker = color
-					.setValue(this.plugin.settings.tooltipBackgroundColor)
+					.setValue(computedBgColor)
 					.onChange(async (value) => {
 						this.plugin.settings.tooltipBackgroundColor = value;
 						bgColorText.setValue(value);
 						await this.plugin.saveSettings();
-						this.updateStyles();
+						this.plugin.updateStyles();
 					});
 				return bgColorPicker;
 			});
@@ -313,29 +359,30 @@ class HoverRevealSettingTab extends PluginSettingTab {
 		// Border color setting
 		let borderColorText: any;
 		let borderColorPicker: any;
+		const computedBorderColor = this.getComputedColor(this.plugin.settings.tooltipBorderColor);
 		new Setting(containerEl)
 			.setName('Tooltip border color')
 			.setDesc('Set the border color of the tooltip')
 			.addText(text => {
 				borderColorText = text
 					.setPlaceholder('var(--background-modifier-border)')
-					.setValue(this.plugin.settings.tooltipBorderColor)
+					.setValue(computedBorderColor)
 					.onChange(async (value) => {
 						this.plugin.settings.tooltipBorderColor = value;
 						borderColorPicker.setValue(value);
 						await this.plugin.saveSettings();
-						this.updateStyles();
+						this.plugin.updateStyles();
 					});
 				return borderColorText;
 			})
 			.addColorPicker(color => {
 				borderColorPicker = color
-					.setValue(this.plugin.settings.tooltipBorderColor)
+					.setValue(computedBorderColor)
 					.onChange(async (value) => {
 						this.plugin.settings.tooltipBorderColor = value;
 						borderColorText.setValue(value);
 						await this.plugin.saveSettings();
-						this.updateStyles();
+						this.plugin.updateStyles();
 					});
 				return borderColorPicker;
 			});
@@ -343,29 +390,30 @@ class HoverRevealSettingTab extends PluginSettingTab {
 		// Bold text color setting
 		let boldColorText: any;
 		let boldColorPicker: any;
+		const computedBoldColor = this.getComputedColor(this.plugin.settings.boldTextColor);
 		new Setting(containerEl)
 			.setName('Bold text color')
 			.setDesc('Set the color of the bold text')
 			.addText(text => {
 				boldColorText = text
 					.setPlaceholder('var(--bold-color)')
-					.setValue(this.plugin.settings.boldTextColor)
+					.setValue(computedBoldColor)
 					.onChange(async (value) => {
 						this.plugin.settings.boldTextColor = value;
 						boldColorPicker.setValue(value);
 						await this.plugin.saveSettings();
-						this.updateStyles();
+						this.plugin.updateStyles();
 					});
 				return boldColorText;
 			})
 			.addColorPicker(color => {
 				boldColorPicker = color
-					.setValue(this.plugin.settings.boldTextColor)
+					.setValue(computedBoldColor)
 					.onChange(async (value) => {
 						this.plugin.settings.boldTextColor = value;
 						boldColorText.setValue(value);
 						await this.plugin.saveSettings();
-						this.updateStyles();
+						this.plugin.updateStyles();
 					});
 				return boldColorPicker;
 			});
