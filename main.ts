@@ -251,84 +251,124 @@ class HoverRevealSettingTab extends PluginSettingTab {
 				}));
 
 		// Text color setting
+		let textColorText: any;
+		let textColorPicker: any;
 		new Setting(containerEl)
 			.setName('Tooltip text color')
 			.setDesc('Set the text color of the tooltip')
-			.addText(text => text
-				.setPlaceholder('#000000')
-				.setValue(this.plugin.settings.tooltipTextColor)
-				.onChange(async (value) => {
-					this.plugin.settings.tooltipTextColor = value;
-					await this.plugin.saveSettings();
-					this.updateStyles();
-				}))
-			.addColorPicker(color => color
-				.setValue(this.plugin.settings.tooltipTextColor)
-				.onChange(async (value) => {
-					this.plugin.settings.tooltipTextColor = value;
-					await this.plugin.saveSettings();
-					this.updateStyles();
-				}));
+			.addText(text => {
+				textColorText = text
+					.setPlaceholder('#000000')
+					.setValue(this.plugin.settings.tooltipTextColor)
+					.onChange(async (value) => {
+						this.plugin.settings.tooltipTextColor = value;
+						textColorPicker.setValue(value);
+						await this.plugin.saveSettings();
+						this.updateStyles();
+					});
+				return textColorText;
+			})
+			.addColorPicker(color => {
+				textColorPicker = color
+					.setValue(this.plugin.settings.tooltipTextColor)
+					.onChange(async (value) => {
+						this.plugin.settings.tooltipTextColor = value;
+						textColorText.setValue(value);
+						await this.plugin.saveSettings();
+						this.updateStyles();
+					});
+				return textColorPicker;
+			});
 
 		// Background color setting
+		let bgColorText: any;
+		let bgColorPicker: any;
 		new Setting(containerEl)
 			.setName('Tooltip background color')
 			.setDesc('Set the background color of the tooltip')
-			.addText(text => text
-				.setPlaceholder('var(--background-primary)')
-				.setValue(this.plugin.settings.tooltipBackgroundColor)
-				.onChange(async (value) => {
-					this.plugin.settings.tooltipBackgroundColor = value;
-					await this.plugin.saveSettings();
-					this.updateStyles();
-				}))
-			.addColorPicker(color => color
-				.setValue(this.plugin.settings.tooltipBackgroundColor)
-				.onChange(async (value) => {
-					this.plugin.settings.tooltipBackgroundColor = value;
-					await this.plugin.saveSettings();
-					this.updateStyles();
-				}));
+			.addText(text => {
+				bgColorText = text
+					.setPlaceholder('var(--background-primary)')
+					.setValue(this.plugin.settings.tooltipBackgroundColor)
+					.onChange(async (value) => {
+						this.plugin.settings.tooltipBackgroundColor = value;
+						bgColorPicker.setValue(value);
+						await this.plugin.saveSettings();
+						this.updateStyles();
+					});
+				return bgColorText;
+			})
+			.addColorPicker(color => {
+				bgColorPicker = color
+					.setValue(this.plugin.settings.tooltipBackgroundColor)
+					.onChange(async (value) => {
+						this.plugin.settings.tooltipBackgroundColor = value;
+						bgColorText.setValue(value);
+						await this.plugin.saveSettings();
+						this.updateStyles();
+					});
+				return bgColorPicker;
+			});
 
 		// Border color setting
+		let borderColorText: any;
+		let borderColorPicker: any;
 		new Setting(containerEl)
 			.setName('Tooltip border color')
 			.setDesc('Set the border color of the tooltip')
-			.addText(text => text
-				.setPlaceholder('var(--background-modifier-border)')
-				.setValue(this.plugin.settings.tooltipBorderColor)
-				.onChange(async (value) => {
-					this.plugin.settings.tooltipBorderColor = value;
-					await this.plugin.saveSettings();
-					this.updateStyles();
-				}))
-			.addColorPicker(color => color
-				.setValue(this.plugin.settings.tooltipBorderColor)
-				.onChange(async (value) => {
-					this.plugin.settings.tooltipBorderColor = value;
-					await this.plugin.saveSettings();
-					this.updateStyles();
-				}));
+			.addText(text => {
+				borderColorText = text
+					.setPlaceholder('var(--background-modifier-border)')
+					.setValue(this.plugin.settings.tooltipBorderColor)
+					.onChange(async (value) => {
+						this.plugin.settings.tooltipBorderColor = value;
+						borderColorPicker.setValue(value);
+						await this.plugin.saveSettings();
+						this.updateStyles();
+					});
+				return borderColorText;
+			})
+			.addColorPicker(color => {
+				borderColorPicker = color
+					.setValue(this.plugin.settings.tooltipBorderColor)
+					.onChange(async (value) => {
+						this.plugin.settings.tooltipBorderColor = value;
+						borderColorText.setValue(value);
+						await this.plugin.saveSettings();
+						this.updateStyles();
+					});
+				return borderColorPicker;
+			});
 
 		// Bold text color setting
+		let boldColorText: any;
+		let boldColorPicker: any;
 		new Setting(containerEl)
 			.setName('Bold text color')
 			.setDesc('Set the color of the bold text')
-			.addText(text => text
-				.setPlaceholder('var(--bold-color)')
-				.setValue(this.plugin.settings.boldTextColor)
-				.onChange(async (value) => {
-					this.plugin.settings.boldTextColor = value;
-					await this.plugin.saveSettings();
-					this.updateStyles();
-				}))
-			.addColorPicker(color => color
-				.setValue(this.plugin.settings.boldTextColor)
-				.onChange(async (value) => {
-					this.plugin.settings.boldTextColor = value;
-					await this.plugin.saveSettings();
-					this.updateStyles();
-				}));
+			.addText(text => {
+				boldColorText = text
+					.setPlaceholder('var(--bold-color)')
+					.setValue(this.plugin.settings.boldTextColor)
+					.onChange(async (value) => {
+						this.plugin.settings.boldTextColor = value;
+						boldColorPicker.setValue(value);
+						await this.plugin.saveSettings();
+						this.updateStyles();
+					});
+				return boldColorText;
+			})
+			.addColorPicker(color => {
+				boldColorPicker = color
+					.setValue(this.plugin.settings.boldTextColor)
+					.onChange(async (value) => {
+						this.plugin.settings.boldTextColor = value;
+						boldColorText.setValue(value);
+						await this.plugin.saveSettings();
+						this.updateStyles();
+					});
+				return boldColorPicker;
+			});
 	}
 
 
