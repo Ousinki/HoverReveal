@@ -2,7 +2,6 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Set
 import { EditorView, ViewPlugin, ViewUpdate, Decoration, DecorationSet, WidgetType } from '@codemirror/view';
 import { Extension } from '@codemirror/state';
 
-// Remember to rename these classes and interfaces!
 
 interface HoverRevealSettings {
 	tooltipTextColor: string;
