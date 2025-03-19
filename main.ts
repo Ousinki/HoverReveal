@@ -287,7 +287,7 @@ class HoverRevealSettingTab extends PluginSettingTab {
 					
 					// Update UI and styles
 					this.display();
-					this.updateStyles();
+					this.plugin.updateStyles();
 					
 					// Show notification
 					new Notice('Reset settings to default');
@@ -416,33 +416,5 @@ class HoverRevealSettingTab extends PluginSettingTab {
 					});
 				return boldColorPicker;
 			});
-	}
-
-
-	updateStyles() {
-		const style = document.createElement('style');
-		style.id = 'hover-reveal-custom-styles';
-		style.textContent = `
-			.hover-reveal-tooltip {
-				color: ${this.plugin.settings.tooltipTextColor} !important;
-				background-color: ${this.plugin.settings.tooltipBackgroundColor} !important;
-				border-color: ${this.plugin.settings.tooltipBorderColor} !important;
-			}
-			.hover-reveal-tooltip::after {
-				border-top-color: ${this.plugin.settings.tooltipBackgroundColor} !important;
-			}
-			.hover-reveal {
-				color: ${this.plugin.settings.boldTextColor} !important;
-			}
-		`;
-
-
-		const oldStyle = document.getElementById('hover-reveal-custom-styles');
-		if (oldStyle) {
-			oldStyle.remove();
-		}
-
-
-		document.head.appendChild(style);
 	}
 }
