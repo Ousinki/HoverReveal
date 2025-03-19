@@ -21,6 +21,9 @@ Example:
 - Input: `[Hello]{This is a tooltip}`
 - Result: You'll see "Hello" (underlined and bold), and when you hover over it, "This is a tooltip" appears.
 
+![image](https://github.com/user-attachments/assets/20f32437-07ee-4d51-9549-67a102f649ff)
+
+
 ### Features
 - Hover to reveal hidden text
 - Automatic theme adaptation
@@ -62,6 +65,9 @@ Use the Reset button to restore default settings.
 示例：
 - 输入：`[你好]{这是一个提示}`
 - 效果：显示"你好"（带下划线和加粗），鼠标悬停时会显示"这是一个提示"
+
+![image](https://github.com/user-attachments/assets/44d3d380-7452-4fd3-911f-eef3498c2467)
+
 
 ### 功能特点
 - 悬停显示隐藏文本
