@@ -95,6 +95,49 @@ export default class HoverRevealPlugin extends Plugin {
 
 					renderedElement.appendChild(tooltip);
 					container.appendChild(renderedElement);
+
+					container.addEventListener("mouseover", () => {
+						const tooltipRect = tooltip.getBoundingClientRect();
+						if (tooltipRect.width === 0) return;
+
+						const mainContentArea = document.querySelector('.workspace-split.mod-vertical.mod-root') as HTMLElement;
+						if (!mainContentArea) return;
+						
+						const mainContentRect = mainContentArea.getBoundingClientRect();
+						const mainContentLeft = mainContentRect.left;
+						const mainContentRight = mainContentRect.right;
+
+						if (tooltipRect.left < mainContentLeft) {
+							tooltip.style.left = `0`;
+							tooltip.style.transform = "translateX(0)";
+						} else if (tooltipRect.right > mainContentRight) {
+							tooltip.style.left = "auto";
+							tooltip.style.right = `0`;
+							tooltip.style.transform = "translateX(0)";
+						}
+					});
+
+					container.addEventListener("mouseout", (event) => {
+						// Check if mouse moved to tooltip
+						const relatedTarget = event.relatedTarget as HTMLElement;
+						if (relatedTarget && tooltip.contains(relatedTarget)) {
+							return; // If mouse moved to tooltip, don't hide
+						}
+						
+						// Hide tooltip first
+						tooltip.style.visibility = "hidden";
+						tooltip.style.opacity = "0";
+						
+						// Delay resetting styles to avoid user seeing style changes
+						setTimeout(() => {
+							tooltip.style.left = "50%";
+							tooltip.style.right = "auto";
+							tooltip.style.transform = "translateX(-50%)";
+							tooltip.style.visibility = "";
+							tooltip.style.opacity = "";
+						}, 200); // 200ms delay to match CSS transition time
+					});
+
 					fragments.push(container);
 
 					lastIndex = match.index + fullMatch.length;
@@ -170,6 +213,81 @@ export default class HoverRevealPlugin extends Plugin {
 					MarkdownRenderer.render(plugin.app, this.tooltipText, tooltip, "", plugin);
 					span.appendChild(tooltip);
 				}
+
+				span.addEventListener("mouseover", () => {
+					const tooltip = span.querySelector(
+						".hover-reveal-tooltip"
+					) as HTMLElement;
+					if (!tooltip) return;
+
+					const tooltipRect = tooltip.getBoundingClientRect();
+					if (tooltipRect.width === 0) return;
+
+					const mainContentArea = document.querySelector('.workspace-split.mod-vertical.mod-root') as HTMLElement;
+					if (!mainContentArea) return;
+					
+					const mainContentRect = mainContentArea.getBoundingClientRect();
+					const mainContentLeft = mainContentRect.left;
+					const mainContentRight = mainContentRect.right;
+
+					if (tooltipRect.left < mainContentLeft) {
+						tooltip.style.left = `0`;
+						tooltip.style.transform = "translateX(0)";
+					} else if (tooltipRect.right > mainContentRight) {
+						tooltip.style.left = "auto";
+						tooltip.style.right = `0`;
+						tooltip.style.transform = "translateX(0)";
+					}
+					
+					// Add mouse leave event for tooltip
+					tooltip.addEventListener("mouseout", (event) => {
+						// Check if mouse moved to trigger element
+						const relatedTarget = event.relatedTarget as HTMLElement;
+						if (relatedTarget && span.contains(relatedTarget)) {
+							return; // If mouse moved to trigger element, don't hide
+						}
+						
+						// Hide tooltip first
+						tooltip.style.visibility = "hidden";
+						tooltip.style.opacity = "0";
+						
+						// Delay resetting styles to avoid user seeing style changes
+						setTimeout(() => {
+							tooltip.style.left = "50%";
+							tooltip.style.right = "auto";
+							tooltip.style.transform = "translateX(-50%)";
+							tooltip.style.visibility = "";
+							tooltip.style.opacity = "";
+						}, 200);
+					});
+				});
+
+				span.addEventListener("mouseout", (event) => {
+					const tooltip = span.querySelector(
+						".hover-reveal-tooltip"
+					) as HTMLElement;
+					if (!tooltip) return;
+					
+					// Check if mouse moved to tooltip
+					const relatedTarget = event.relatedTarget as HTMLElement;
+					if (relatedTarget && tooltip.contains(relatedTarget)) {
+						return; // If mouse moved to tooltip, don't hide
+					}
+					
+					// Hide tooltip first
+					tooltip.style.visibility = "hidden";
+					tooltip.style.opacity = "0";
+					
+					// Delay resetting styles to avoid user seeing style changes
+					setTimeout(() => {
+						tooltip.style.left = "50%";
+						tooltip.style.right = "auto";
+						tooltip.style.transform = "translateX(-50%)";
+						tooltip.style.visibility = "";
+						tooltip.style.opacity = "";
+					}, 200); // 200ms delay to match CSS transition time
+				});
+				
 				return span;
 			}
 
@@ -280,16 +398,16 @@ class HoverRevealSettingTab extends PluginSettingTab {
 	}
 
 	private getComputedColor(cssVar: string): string {
-		// 创建一个临时元素来获取计算后的颜色
+		// Create a temporary element to get computed color
 		const temp = document.createElement("div");
 		document.body.appendChild(temp);
 		temp.style.color = cssVar;
 
-		// 获取计算后的颜色
+		// Get computed color
 		const computedColor = getComputedStyle(temp).color;
 		document.body.removeChild(temp);
 
-		// 将 rgb 转换为 16 进制
+		// Convert rgb to hexadecimal
 		if (computedColor.startsWith("rgb")) {
 			const [r, g, b] = computedColor.match(/\d+/g)?.map(Number) || [
 				0, 0, 0,
