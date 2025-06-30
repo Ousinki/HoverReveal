@@ -60,7 +60,7 @@ export default class HoverRevealPlugin extends Plugin {
 				const text = textNode.textContent;
 				if (!text) return;
 
-				const regex = /\[(.*?)\]\{(.*?)\}/g;
+				const regex = /\[([^\[\]{}]*?)\]\{([^{}]*?)\}/g;
 				let match;
 				let lastIndex = 0;
 				const fragments = [];
@@ -102,7 +102,7 @@ export default class HoverRevealPlugin extends Plugin {
 
 						const mainContentArea = document.querySelector('.workspace-split.mod-vertical.mod-root') as HTMLElement;
 						if (!mainContentArea) return;
-						
+
 						const mainContentRect = mainContentArea.getBoundingClientRect();
 						const mainContentLeft = mainContentRect.left;
 						const mainContentRight = mainContentRect.right;
@@ -123,11 +123,11 @@ export default class HoverRevealPlugin extends Plugin {
 						if (relatedTarget && tooltip.contains(relatedTarget)) {
 							return; // If mouse moved to tooltip, don't hide
 						}
-						
+
 						// Hide tooltip first
 						tooltip.style.visibility = "hidden";
 						tooltip.style.opacity = "0";
-						
+
 						// Delay resetting styles to avoid user seeing style changes
 						setTimeout(() => {
 							tooltip.style.left = "50%";
@@ -195,19 +195,19 @@ export default class HoverRevealPlugin extends Plugin {
 
 			toDOM() {
 				const span = document.createElement("span");
-			
+
 				if (this.isActive) {
 					span.textContent = `[${this.visibleText}]{${this.tooltipText}}`;
 				} else {
 					span.classList.add("hover-reveal");
-					
+
 					const visibleContainer = document.createElement("span");
 					MarkdownRenderer.render(plugin.app, this.visibleText, visibleContainer, "", plugin).then(() => {
 						const content = visibleContainer.querySelector('p')?.innerHTML || this.visibleText;
 						visibleContainer.innerHTML = content;
 					});
 					span.appendChild(visibleContainer);
-					
+
 					const tooltip = document.createElement("div");
 					tooltip.classList.add("hover-reveal-tooltip");
 					MarkdownRenderer.render(plugin.app, this.tooltipText, tooltip, "", plugin);
@@ -225,7 +225,7 @@ export default class HoverRevealPlugin extends Plugin {
 
 					const mainContentArea = document.querySelector('.workspace-split.mod-vertical.mod-root') as HTMLElement;
 					if (!mainContentArea) return;
-					
+
 					const mainContentRect = mainContentArea.getBoundingClientRect();
 					const mainContentLeft = mainContentRect.left;
 					const mainContentRight = mainContentRect.right;
@@ -238,7 +238,7 @@ export default class HoverRevealPlugin extends Plugin {
 						tooltip.style.right = `0`;
 						tooltip.style.transform = "translateX(0)";
 					}
-					
+
 					// Add mouse leave event for tooltip
 					tooltip.addEventListener("mouseout", (event) => {
 						// Check if mouse moved to trigger element
@@ -246,11 +246,11 @@ export default class HoverRevealPlugin extends Plugin {
 						if (relatedTarget && span.contains(relatedTarget)) {
 							return; // If mouse moved to trigger element, don't hide
 						}
-						
+
 						// Hide tooltip first
 						tooltip.style.visibility = "hidden";
 						tooltip.style.opacity = "0";
-						
+
 						// Delay resetting styles to avoid user seeing style changes
 						setTimeout(() => {
 							tooltip.style.left = "50%";
@@ -267,17 +267,17 @@ export default class HoverRevealPlugin extends Plugin {
 						".hover-reveal-tooltip"
 					) as HTMLElement;
 					if (!tooltip) return;
-					
+
 					// Check if mouse moved to tooltip
 					const relatedTarget = event.relatedTarget as HTMLElement;
 					if (relatedTarget && tooltip.contains(relatedTarget)) {
 						return; // If mouse moved to tooltip, don't hide
 					}
-					
+
 					// Hide tooltip first
 					tooltip.style.visibility = "hidden";
 					tooltip.style.opacity = "0";
-					
+
 					// Delay resetting styles to avoid user seeing style changes
 					setTimeout(() => {
 						tooltip.style.left = "50%";
@@ -287,7 +287,7 @@ export default class HoverRevealPlugin extends Plugin {
 						tooltip.style.opacity = "";
 					}, 200); // 200ms delay to match CSS transition time
 				});
-				
+
 				return span;
 			}
 
@@ -323,7 +323,7 @@ export default class HoverRevealPlugin extends Plugin {
 				buildDecorations(view: EditorView) {
 					const widgets = [];
 					const content = view.state.doc.toString();
-					const regex = /\[(.*?)\]\{(.*?)\}/g;
+					const regex = /\[([^\[\]{}]*?)\]\{([^{}]*?)\}/g;
 					let match;
 
 					while ((match = regex.exec(content)) !== null) {
